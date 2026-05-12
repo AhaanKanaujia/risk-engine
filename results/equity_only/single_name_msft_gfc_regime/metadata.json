@@ -1,0 +1,19 @@
+{
+  "name": "single_name_msft_gfc_regime",
+  "category": "equity_only",
+  "portfolio_builder": "single_name_equity",
+  "start_date": "2008-01-01",
+  "end_date": "2009-12-31",
+  "window_size": 252,
+  "up_to_days": 10,
+  "alpha": 0.95,
+  "lambda_val": 0.99,
+  "num_simulations": 10000,
+  "portfolio_kwargs": {
+    "ticker": "MSFT",
+    "quantity": 100,
+    "spot_price": 30.0,
+    "opened_date": "2007-01-01"
+  },
+  "notes": "Single-name MSFT equity backtest through the global financial crisis regime."
+}

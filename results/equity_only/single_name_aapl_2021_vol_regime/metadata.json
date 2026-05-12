@@ -1,0 +1,19 @@
+{
+  "name": "single_name_aapl_2021_vol_regime",
+  "category": "equity_only",
+  "portfolio_builder": "single_name_equity",
+  "start_date": "2021-01-01",
+  "end_date": "2022-12-31",
+  "window_size": 252,
+  "up_to_days": 10,
+  "alpha": 0.95,
+  "lambda_val": 0.99,
+  "num_simulations": 10000,
+  "portfolio_kwargs": {
+    "ticker": "AAPL",
+    "quantity": 100,
+    "spot_price": 130.0,
+    "opened_date": "2020-01-01"
+  },
+  "notes": "Single-name AAPL equity backtest through the 2021-2022 high-volatility regime."
+}

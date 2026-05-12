@@ -1,0 +1,17 @@
+{
+  "name": "bear_put_spread_aapl_stress_regime",
+  "category": "options_only",
+  "portfolio_builder": "bear_put_spread_aapl",
+  "start_date": "2026-01-02",
+  "end_date": "2026-04-30",
+  "window_size": 100,
+  "up_to_days": 10,
+  "alpha": 0.95,
+  "lambda_val": 0.99,
+  "num_simulations": 10000,
+  "portfolio_kwargs": {
+    "opened_date": "2026-01-02",
+    "expiry": "2026-06-27"
+  },
+  "notes": "Directional bearish put-spread portfolio on AAPL in the local stress regime."
+}

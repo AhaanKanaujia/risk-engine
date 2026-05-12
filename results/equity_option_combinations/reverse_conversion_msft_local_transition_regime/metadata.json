@@ -1,0 +1,17 @@
+{
+  "name": "reverse_conversion_msft_local_transition_regime",
+  "category": "equity_option_combinations",
+  "portfolio_builder": "reverse_conversion_msft",
+  "start_date": "2026-02-23",
+  "end_date": "2026-04-21",
+  "window_size": 100,
+  "up_to_days": 10,
+  "alpha": 0.95,
+  "lambda_val": 0.99,
+  "num_simulations": 10000,
+  "portfolio_kwargs": {
+    "opened_date": "2026-02-23",
+    "expiry": "2026-06-27"
+  },
+  "notes": "Approximately delta- and gamma-neutral reverse-conversion-style portfolio on MSFT in a later local transition regime."
+}
