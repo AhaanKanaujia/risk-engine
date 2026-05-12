@@ -63,7 +63,7 @@ Options-heavy experiments depend on the available implied-volatility surface his
 Clone the repository and create a local Python environment:
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/AhaanKanaujia/risk-engine/
 cd risk-engine
 python3 -m venv risk-engine-env
 source risk-engine-env/bin/activate
@@ -89,7 +89,7 @@ If you only want to run the project using the sample data already included in `d
 After installation, the quickest way to verify the repository is working is:
 
 ```bash
-python3 main.py
+./risk-engine-env/bin/python3 -m main
 ```
 
 This runs the configured reporting scenarios against the sample data and saves outputs under `results/`.
@@ -99,7 +99,7 @@ This runs the configured reporting scenarios against the sample data and saves o
 `main.py` runs the predefined scenario set in `reporting/experiment_configs.py`:
 
 ```bash
-python3 main.py
+./risk-engine-env/bin/python3 -m main
 ```
 
 This creates saved outputs under `results/`, grouped by:
@@ -121,7 +121,7 @@ Each scenario folder contains:
 `engine.py` shows the full workflow for a manually specified portfolio:
 
 ```bash
-python3 engine.py
+./risk-engine-env/bin/python3 -m engine
 ```
 
 That script demonstrates:
