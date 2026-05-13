@@ -35,8 +35,8 @@ def main():
     # pf.add_position(position.Position(ticker="MSFT", quantity=1, tradable_type="stock", spot_price=475.0, date_opened=datetime.date(2026, 1, 1)))
     # pf.add_position(position.Position(ticker="GOOGL", quantity=1, tradable_type="stock", spot_price=300.0, date_opened=datetime.date(2026, 1, 1)))
     
-    pf.add_position(position.Position(ticker="AAPL_C", quantity=100, tradable_type="option", spot_price=40.0, option_type="call", strike=250.0, expiry=datetime.date(2026, 6, 27), underlying="AAPL", date_opened=datetime.date(2026, 1, 1)))
-    pf.add_position(position.Position(ticker="MSFT_P", quantity=100, tradable_type="option", spot_price=30.0, option_type="put", strike=475.0, expiry=datetime.date(2026, 6, 27), underlying="MSFT", date_opened=datetime.date(2026, 1, 1)))
+    pf.add_position(position.Position(ticker="AAPL_C", quantity=100, tradable_type="option", spot_price=40.0, option_type="call", strike=250.0, expiry=datetime.date(2026, 6, 27), underlying="AAPL", date_opened=start_date))
+    pf.add_position(position.Position(ticker="MSFT_P", quantity=100, tradable_type="option", spot_price=30.0, option_type="put", strike=475.0, expiry=datetime.date(2026, 6, 27), underlying="MSFT", date_opened=start_date))
     # pf.add_position(position.Position(ticker="AAPL_C", quantity=1, tradable_type="option", spot_price=40.0, option_type="call", strike=250.0, expiry=datetime.date(2026, 2, 27), underlying="AAPL", date_opened=datetime.date(2026, 1, 1)))
     # pf.add_position(position.Position(ticker="MSFT_P", quantity=1, tradable_type="option", spot_price=30.0, option_type="put", strike=475.0, expiry=datetime.date(2026, 2, 27), underlying="MSFT", date_opened=datetime.date(2026, 1, 1)))
 
@@ -64,12 +64,13 @@ def main():
     # optional manual return moments for stocks in the portfolio
     # set to None to use historical calibration
     # otherwise provide mean and variance of daily returns for every stock ticker
-    # manual_return_moments = None
-    manual_return_moments = {
-        "AAPL": {"mean": 0.0005, "variance": 0.0004},
-        "MSFT": {"mean": 0.0004, "variance": 0.0003},
-        "GOOGL": {"mean": 0.00045, "variance": 0.00035},
-    }
+    # assumes each stock return to be uncorrelated, correlation matrix is identity matrix
+    manual_return_moments = None
+    # manual_return_moments = {
+    #     "AAPL": {"mean": 0.0005, "variance": 0.0004},
+    #     "MSFT": {"mean": 0.0004, "variance": 0.0003},
+    #     "GOOGL": {"mean": 0.00045, "variance": 0.00035},
+    # }
 
     # 100k simulations is usually sufficient for stable monte carlo var and es calculations
     # increasing this will likely make the code slower with marginal to no improvements in accuracy

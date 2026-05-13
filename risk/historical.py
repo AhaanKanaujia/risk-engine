@@ -9,7 +9,12 @@ from models import monte_carlo
 from pricing import black_scholes
 import risk.utils
 
-def get_stock_portfolio_pnl_distribution(pf: portfolio.Portfolio, date: datetime.date, window_size: int, up_to_days: int) -> pd.Series:
+def get_stock_portfolio_pnl_distribution(
+    pf: portfolio.Portfolio,
+    date: datetime.date,
+    window_size: int,
+    up_to_days: int,
+) -> pd.Series:
     """
     Compute the distribution of PnL for the stock positions in the portfolio on the given date using the last window_size days of historical price data.
     Computes price changes for each stock and entire portfolio over up_to_days days.
@@ -37,7 +42,12 @@ def get_stock_portfolio_pnl_distribution(pf: portfolio.Portfolio, date: datetime
     else:
         return pd.Series(dtype=float)
 
-def get_option_portfolio_pnl_distribution(pf: portfolio.Portfolio, date: datetime.date, window_size: int, up_to_days: int) -> pd.Series:
+def get_option_portfolio_pnl_distribution(
+    pf: portfolio.Portfolio,
+    date: datetime.date,
+    window_size: int,
+    up_to_days: int,
+) -> pd.Series:
     """
     Compute the distribution of PnL for the option positions in the portfolio on the given date using the last window_size days of historical price data.
     Computes price changes for each option and entire portfolio over up_to_days days.
@@ -109,7 +119,12 @@ def get_option_portfolio_pnl_distribution(pf: portfolio.Portfolio, date: datetim
     else:
         return pd.Series(dtype=float)
 
-def get_portfolio_pnl_distribution(pf: portfolio.Portfolio, date: datetime.date, window_size: int, up_to_days: int) -> dict[datetime.date, float]:
+def get_portfolio_pnl_distribution(
+    pf: portfolio.Portfolio,
+    date: datetime.date,
+    window_size: int,
+    up_to_days: int,
+) -> dict[datetime.date, float]:
     """
     Compute the distribution of PnL for the portfolio on the given date using the last window_size days of historical price data.
     Computes price changes for each stock and entire portfolio over up_to_days days.
@@ -146,7 +161,15 @@ def get_portfolio_pnl_distribution(pf: portfolio.Portfolio, date: datetime.date,
     else:
         raise ValueError("Invalid combination of stock and option price/quantity data.")
 
-def compute_portfolio_historical_var_es(pf: portfolio.Portfolio, date: datetime.date, window_size: int, up_to_days: int, alpha: float, lambda_val: float, method: str) -> tuple[list[float], float]:
+def compute_portfolio_historical_var_es(
+    pf: portfolio.Portfolio,
+    date: datetime.date,
+    window_size: int,
+    up_to_days: int,
+    alpha: float,
+    lambda_val: float,
+    method: str,
+) -> tuple[list[float], float]:
     """
     Computes the historical VaR and ES of portfolio on the given date using the last window_size days of historical price data.
     VaR is the maximum loss that the portfolio could have experienced with a confidence level of alpha over the next up_to_days days.
@@ -209,4 +232,3 @@ def compute_portfolio_historical_var_es(pf: portfolio.Portfolio, date: datetime.
         raise ValueError("Invalid method. Please use 'n-day' or '1-day-scaled'.")
 
     return pnl_data, var, es
-    

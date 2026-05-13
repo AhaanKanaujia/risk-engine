@@ -31,7 +31,10 @@ _implied_vol_point_cache: dict[
     float
 ] = {}
 
-def _resolve_price_surface_path(ticker: str, date: datetime.date) -> str:
+def _resolve_price_surface_path(
+    ticker: str,
+    date: datetime.date,
+) -> str:
     """
     Resolve the daily price surface file for a ticker and date.
     Falls back to the latest available prior surface date when an exact file is not present.
@@ -79,7 +82,9 @@ def _resolve_price_surface_path(ticker: str, date: datetime.date) -> str:
     fallback_date = max(available_dates)
     return f"{surface_dir}/vol_surface_{fallback_date}.csv"
 
-def _normalize_price_history(df: pd.DataFrame) -> pd.DataFrame:
+def _normalize_price_history(
+    df: pd.DataFrame,
+) -> pd.DataFrame:
     """
     Normalize price history data so it is indexed by Date using datetime.date values.
 
@@ -97,7 +102,9 @@ def _normalize_price_history(df: pd.DataFrame) -> pd.DataFrame:
 
     return df
 
-def _normalize_daily_price_surface(df: pd.DataFrame) -> pd.DataFrame:
+def _normalize_daily_price_surface(
+    df: pd.DataFrame,
+) -> pd.DataFrame:
     """
     Normalize daily option price surface data after reading from csv.
 
@@ -127,7 +134,9 @@ def clear_cache() -> None:
     global _risk_free_rate_history_cache
     _risk_free_rate_history_cache = None
 
-def get_price_history(ticker: str) -> pd.DataFrame:
+def get_price_history(
+    ticker: str,
+) -> pd.DataFrame:
     if ticker in _price_history_cache:
         return _price_history_cache[ticker]
 
@@ -164,7 +173,10 @@ def get_risk_free_rate_history() -> pd.DataFrame:
     _risk_free_rate_history_cache = df
     return df
 
-def get_daily_price_surface(ticker: str, date: datetime.date) -> pd.DataFrame:
+def get_daily_price_surface(
+    ticker: str,
+    date: datetime.date,
+) -> pd.DataFrame:
     key = (ticker, date)
     if key in _daily_price_surface_cache:
         return _daily_price_surface_cache[key]
@@ -181,7 +193,10 @@ def get_daily_price_surface(ticker: str, date: datetime.date) -> pd.DataFrame:
     _daily_price_surface_cache[key] = df
     return df
 
-def get_daily_vol_surface(ticker: str, date: datetime.date) -> pd.DataFrame:
+def get_daily_vol_surface(
+    ticker: str,
+    date: datetime.date,
+) -> pd.DataFrame:
     key = (ticker, date)
     if key in _daily_vol_surface_cache:
         return _daily_vol_surface_cache[key]

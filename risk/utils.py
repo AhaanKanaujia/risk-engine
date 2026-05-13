@@ -9,7 +9,10 @@ from pricing import black_scholes
 # helper function to interpolate implied vol across strike for a fixed maturity slice of the vol surface
 # used in implied vol shocks computation for historical Var/ES calculations
 # put here becuase cache and risk both need to use this function and we want to avoid circular imports
-def interpolate_vol_by_strike(surface_slice: pd.DataFrame, strike: float) -> float:
+def interpolate_vol_by_strike(
+    surface_slice: pd.DataFrame,
+    strike: float,
+) -> float:
     """
     Interpolate implied volatility across strike for a fixed maturity slice.
 
@@ -29,7 +32,12 @@ def interpolate_vol_by_strike(surface_slice: pd.DataFrame, strike: float) -> flo
 
 # currently not being used, kept in case methodology changes
 # loads underlying prices earlier to construct option pnl series
-def load_start_end_underlying_prices(underlying: str, date: datetime.date, scenario_start_dates: pd.DatetimeIndex, scenario_end_dates: pd.DatetimeIndex) -> tuple[np.ndarray, np.ndarray]:
+def load_start_end_underlying_prices(
+    underlying: str,
+    date: datetime.date,
+    scenario_start_dates: pd.DatetimeIndex,
+    scenario_end_dates: pd.DatetimeIndex,
+) -> tuple[np.ndarray, np.ndarray]:
     """
     Load and align underlying prices for the given underlying asset over the specified scenario dates.
     Called in option pnl computation part of historical Var/ES calculations.
@@ -59,7 +67,10 @@ def load_start_end_underlying_prices(underlying: str, date: datetime.date, scena
 
     return underlying_prices_start, underlying_prices_end
 
-def load_underlying_stock_price_on_date(ticker: str, date: datetime.date) -> float:
+def load_underlying_stock_price_on_date(
+    ticker: str,
+    date: datetime.date,
+) -> float:
     """
     Load the underlying stock price for a given ticker on a given date from the data folder where it is stored as a csv file.
 
@@ -82,7 +93,11 @@ def load_underlying_stock_price_on_date(ticker: str, date: datetime.date) -> flo
 
     return float(underlying_price["Close"].iloc[0])
 
-def load_risk_free_rate_shocks(date: datetime.date, scenario_start_dates: pd.DatetimeIndex, scenario_end_dates: pd.DatetimeIndex) -> np.ndarray:
+def load_risk_free_rate_shocks(
+    date: datetime.date,
+    scenario_start_dates: pd.DatetimeIndex,
+    scenario_end_dates: pd.DatetimeIndex,
+) -> np.ndarray:
     """
     Load and align risk free rate shocks for the specified scenario dates.
     Called in option pnl computation part of historical Var/ES calculations.
@@ -109,7 +124,14 @@ def load_risk_free_rate_shocks(date: datetime.date, scenario_start_dates: pd.Dat
 
     return risk_free_rates_end - risk_free_rates_start
 
-def load_implied_vol_shocks(underlying: str, option_type: str, strike: float, expiry: datetime.date, scenario_start_dates: pd.DatetimeIndex, scenario_end_dates: pd.DatetimeIndex) -> np.ndarray:
+def load_implied_vol_shocks(
+    underlying: str,
+    option_type: str,
+    strike: float,
+    expiry: datetime.date,
+    scenario_start_dates: pd.DatetimeIndex,
+    scenario_end_dates: pd.DatetimeIndex,
+) -> np.ndarray:
     """
     Load and align implied vol schocks for the given option parameters over the specified scenario dates.
     Does not take into account change in time to expiry, only looks at change in implied vol for the same expiry, strike, and option type.
@@ -140,7 +162,11 @@ def load_implied_vol_shocks(underlying: str, option_type: str, strike: float, ex
 
     return implied_vols_end - implied_vols_start
 
-def load_start_end_times_to_expiry(expiry: datetime.date, scenario_start_dates: pd.DatetimeIndex, scenario_end_dates: pd.DatetimeIndex) -> tuple[np.ndarray, np.ndarray]:
+def load_start_end_times_to_expiry(
+    expiry: datetime.date,
+    scenario_start_dates: pd.DatetimeIndex,
+    scenario_end_dates: pd.DatetimeIndex,
+) -> tuple[np.ndarray, np.ndarray]:
     """
     Load and align times to expiry for the given option expiry date over the specified scenario dates.
     Called in option pnl computation part of historical Var/ES calculations.
@@ -161,7 +187,12 @@ def load_start_end_times_to_expiry(expiry: datetime.date, scenario_start_dates: 
 
     return times_to_expiry_start, times_to_expiry_end
 
-def load_underlying_stock_prices(pf: portfolio.Portfolio, date: datetime.date, window_size: int, up_to_days: int) -> pd.DataFrame:
+def load_underlying_stock_prices(
+    pf: portfolio.Portfolio,
+    date: datetime.date,
+    window_size: int,
+    up_to_days: int,
+) -> pd.DataFrame:
     """
     Load historical Close prices for all underlying stock of an option position, indexed by Date, and aligned to ensure we have the necessary price data to compute price changes over up_to_days days.
 
@@ -210,7 +241,12 @@ def load_underlying_stock_prices(pf: portfolio.Portfolio, date: datetime.date, w
 
     return underlying_prices
 
-def load_stock_prices_quantities(pf: portfolio.Portfolio, date: datetime.date, window_size: int, up_to_days: int) -> tuple[list[str], pd.DataFrame, dict[str, int]]:
+def load_stock_prices_quantities(
+    pf: portfolio.Portfolio,
+    date: datetime.date,
+    window_size: int,
+    up_to_days: int,
+) -> tuple[list[str], pd.DataFrame, dict[str, int]]:
     """
     Load and align historical Close prices for all tickers in the portfolio on the given date, along with their corresponding quantities.
     
@@ -256,7 +292,9 @@ def load_stock_prices_quantities(pf: portfolio.Portfolio, date: datetime.date, w
 
     return tickers, prices, quantities
 
-def get_risk_free_rate(date: datetime.date) -> float:
+def get_risk_free_rate(
+    date: datetime.date,
+) -> float:
     """
     Load the risk-free rate on a given date from the data folder where it is stored as a csv file.
 

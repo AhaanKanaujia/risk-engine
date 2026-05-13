@@ -10,7 +10,13 @@ from portfolio import portfolio
 from portfolio import position
 from risk import utils, cache
 
-def _build_valid_implied_vol_mask(S: float, K: np.ndarray, T: np.ndarray, market_price: np.ndarray, option_type: np.ndarray) -> np.ndarray:
+def _build_valid_implied_vol_mask(
+    S: float,
+    K: np.ndarray,
+    T: np.ndarray,
+    market_price: np.ndarray,
+    option_type: np.ndarray,
+) -> np.ndarray:
     """
     Compute a mask indicating which option contracts have valid inputs for implied volatility inversion.
 
@@ -37,7 +43,19 @@ def _build_valid_implied_vol_mask(S: float, K: np.ndarray, T: np.ndarray, market
         (market_price > intrinsic + 1e-8)
     )
 
-def _newton_implied_vol(S: float, K: np.ndarray, T: np.ndarray, r: float, market_price: np.ndarray, option_type: np.ndarray, sigma0: np.ndarray, tol: float = 1e-8, max_iter: int = 20, sigma_min: float = 1e-6, sigma_max: float = 5.0) -> tuple[np.ndarray, np.ndarray]:
+def _newton_implied_vol(
+    S: float,
+    K: np.ndarray,
+    T: np.ndarray,
+    r: float,
+    market_price: np.ndarray,
+    option_type: np.ndarray,
+    sigma0: np.ndarray,
+    tol: float = 1e-8,
+    max_iter: int = 20,
+    sigma_min: float = 1e-6,
+    sigma_max: float = 5.0,
+) -> tuple[np.ndarray, np.ndarray]:
     """
     Compute implied volatilities using Newton's method with vectorized Black-Scholes price and vega calculations.
 
@@ -89,7 +107,16 @@ def _newton_implied_vol(S: float, K: np.ndarray, T: np.ndarray, r: float, market
 
     return sigma, converged
 
-def _brent_implied_vol_fallback(S: float, K: np.ndarray, T: np.ndarray, r: float, market_price: np.ndarray, option_type: np.ndarray, sigma_min: float = 1e-6, sigma_max: float = 5.0) -> np.ndarray:
+def _brent_implied_vol_fallback(
+    S: float,
+    K: np.ndarray,
+    T: np.ndarray,
+    r: float,
+    market_price: np.ndarray,
+    option_type: np.ndarray,
+    sigma_min: float = 1e-6,
+    sigma_max: float = 5.0,
+) -> np.ndarray:
     """
     Compute implied volatilities using Brent's method for contracts where Newton's method does not converge.
 
@@ -120,7 +147,14 @@ def _brent_implied_vol_fallback(S: float, K: np.ndarray, T: np.ndarray, r: float
 
     return implied_vols
 
-def infer_implied_vol_surface(S: float, K: np.ndarray, T: np.ndarray, r: float, market_price: np.ndarray, option_type: np.ndarray) -> np.ndarray:
+def infer_implied_vol_surface(
+    S: float,
+    K: np.ndarray,
+    T: np.ndarray,
+    r: float,
+    market_price: np.ndarray,
+    option_type: np.ndarray,
+) -> np.ndarray:
     """
     Compute implied volatilities for an option price surface using a hybrid Newton and Brent root finding approach.
 
@@ -172,7 +206,11 @@ def infer_implied_vol_surface(S: float, K: np.ndarray, T: np.ndarray, r: float, 
 
     return implied_vols
 
-def extend_price_surface_with_implied_vol(price_surface_df: pd.DataFrame, date: datetime.date, ticker: str) -> pd.DataFrame:
+def extend_price_surface_with_implied_vol(
+    price_surface_df: pd.DataFrame,
+    date: datetime.date,
+    ticker: str,
+) -> pd.DataFrame:
     """
     Extend price surface with implied vol computed by root finding method
 
@@ -208,7 +246,11 @@ def extend_price_surface_with_implied_vol(price_surface_df: pd.DataFrame, date: 
 
     return price_surface_df
 
-def _extrapolated_implied_vol(vol_surface: pd.DataFrame, strike: float, maturity: float) -> float:
+def _extrapolated_implied_vol(
+    vol_surface: pd.DataFrame,
+    strike: float,
+    maturity: float,
+) -> float:
     """
     Extrapolate implied volatility in the maturity direction using the two nearest boundary maturities.
 
@@ -240,7 +282,13 @@ def _extrapolated_implied_vol(vol_surface: pd.DataFrame, strike: float, maturity
 
     return float(vol1 + (maturity - m1) * (vol2 - vol1) / (m2 - m1))
 
-def option_implied_vol(date: datetime.date, ticker: str, expiry: float, option_type: str, strike: float) -> float:
+def option_implied_vol(
+    date: datetime.date,
+    ticker: str,
+    expiry: float,
+    option_type: str,
+    strike: float,
+) -> float:
     """
     Read the implied volatility surface for a given ticker and expiry from the data folder where it is stored as a csv file.
     Looks for closest expiry in the vol surface data that is greater than or equal to the given expiry and returns the implied volatility surface for that expiry.
@@ -285,7 +333,13 @@ def option_implied_vol(date: datetime.date, ticker: str, expiry: float, option_t
 
     return implied_vol
 
-def option_implied_vol_fixed_expiry(date: datetime.date, ticker: str, expiry: float, option_type: str, strike: float) -> float:
+def option_implied_vol_fixed_expiry(
+    date: datetime.date,
+    ticker: str,
+    expiry: float,
+    option_type: str,
+    strike: float,
+) -> float:
     """
     A variant of the option implied vol function that assumes fixed expiry instead of moving expiry.
     Used in historical implied vol shock calculations to avoid bias from moving to different expiry as we move through time.
@@ -369,7 +423,14 @@ def option_price(
 
     return prices
 
-def option_delta(S: np.ndarray, K: float, T: np.ndarray, r: float, sigma: float, option_type: str) -> float:
+def option_delta(
+    S: np.ndarray,
+    K: float,
+    T: np.ndarray,
+    r: float,
+    sigma: float,
+    option_type: str,
+) -> float:
     """
     Compute the Black-Scholes delta of a European call or put option.
 
@@ -399,7 +460,13 @@ def option_delta(S: np.ndarray, K: float, T: np.ndarray, r: float, sigma: float,
     
     return delta
 
-def option_gamma(S: np.ndarray, K: float, T: np.ndarray, r: float, sigma: float) -> float:
+def option_gamma(
+    S: np.ndarray,
+    K: float,
+    T: np.ndarray,
+    r: float,
+    sigma: float,
+) -> float:
     """
     Compute the Black-Scholes gamma of a European option.
 
@@ -422,7 +489,13 @@ def option_gamma(S: np.ndarray, K: float, T: np.ndarray, r: float, sigma: float)
 
     return gamma
 
-def option_vega(S: np.ndarray, K: float, T: np.ndarray, r: float, sigma: float) -> float:
+def option_vega(
+    S: np.ndarray,
+    K: float,
+    T: np.ndarray,
+    r: float,
+    sigma: float,
+) -> float:
     """
     Compute the Black-Scholes vega of a European option.
 
