@@ -1,7 +1,11 @@
 import numpy as np
 from scipy.stats import norm
 
-def test_correlation_matrix(simulated_paths, true_corr, alpha=0.05):
+def test_correlation_matrix(
+    simulated_paths,
+    true_corr,
+    alpha=0.05,
+):
     """
     Perform a statistical test to check if the correlation matrix of the simulated log returns matches the true correlation matrix used for calibration.
     

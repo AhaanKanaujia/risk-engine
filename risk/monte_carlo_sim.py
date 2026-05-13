@@ -7,7 +7,9 @@ import matplotlib.pyplot as plt
 from portfolio import portfolio
 from models import monte_carlo
 
-def plot_simulated_portfolio_value(paths: np.ndarray):
+def plot_simulated_portfolio_value(
+    paths: np.ndarray,
+):
     """
     Plot the simulated portfolio value paths.
 
@@ -53,7 +55,16 @@ def plot_simulated_portfolio_value(paths: np.ndarray):
     plt.tight_layout()
     plt.show()
 
-def compute_portfolio_monte_carlo_var_es(pf: portfolio.Portfolio, date: datetime.date, window_size: int, up_to_days: int, alpha: float, lambda_val: float, num_simulations: int) -> tuple[np.ndarray, float, float]:
+def compute_portfolio_monte_carlo_var_es(
+    pf: portfolio.Portfolio,
+    date: datetime.date,
+    window_size: int,
+    up_to_days: int,
+    alpha: float,
+    lambda_val: float,
+    num_simulations: int,
+    manual_return_moments: dict[str, dict[str, float]] | None = None,
+) -> tuple[np.ndarray, float, float]:
     """
     Computes the Monte Carlo VaR and ES of portfolio on the given date using the last window_size days of historical price data to calibrate a geometric brownian motion model for each stock in the portfolio and simulating future stock price paths.
     VaR is the maximum loss that the portfolio could have experienced with a confidence level of alpha over the next up_to_days days.
@@ -67,13 +78,23 @@ def compute_portfolio_monte_carlo_var_es(pf: portfolio.Portfolio, date: datetime
         lambda_val: The lambda parameter for the calibration function.
         alpha: The confidence level for the Monte Carlo VaR calculation (e.g. 0.95 for 95% confidence level).
         num_simulations: The number of simulated paths to generate for each stock in the portfolio.
+        manual_return_moments: Optional dictionary of user-specified return means
+            and variances for each stock ticker.
     
     Returns:
         The Monte Carlo VaR and ES of the portfolio on the given date.
     """
 
     # compute future portfolio value paths using the simulated stock price paths and current portfolio quantities
-    portfolio_value_paths = monte_carlo.simulate_portfolio_value(pf, date, window_size, up_to_days, lambda_val=lambda_val, num_simulations=num_simulations)
+    portfolio_value_paths = monte_carlo.simulate_portfolio_value(
+        pf,
+        date,
+        window_size,
+        up_to_days,
+        lambda_val=lambda_val,
+        num_simulations=num_simulations,
+        manual_return_moments=manual_return_moments,
+    )
 
     # get only the portfolio value on last day, rest of the days are not relevant for computing the ES for up_to_days days
     first_day_portfolio_value_paths = portfolio_value_paths[:, 0]

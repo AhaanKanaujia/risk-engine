@@ -61,6 +61,16 @@ def main():
     # usually set to 0.9, 0.95, 0.975 or 0.99; set to 1.0 for equal weighting of all historical data
     lambda_val = 0.99
 
+    # optional manual return moments for stocks in the portfolio
+    # set to None to use historical calibration
+    # otherwise provide mean and variance of daily returns for every stock ticker
+    # manual_return_moments = None
+    manual_return_moments = {
+        "AAPL": {"mean": 0.0005, "variance": 0.0004},
+        "MSFT": {"mean": 0.0004, "variance": 0.0003},
+        "GOOGL": {"mean": 0.00045, "variance": 0.00035},
+    }
+
     # 100k simulations is usually sufficient for stable monte carlo var and es calculations
     # increasing this will likely make the code slower with marginal to no improvements in accuracy
     num_simulations = 100_000
@@ -74,6 +84,7 @@ def main():
         alpha=alpha,
         lambda_val=lambda_val,
         num_simulations=num_simulations,
+        manual_return_moments=manual_return_moments,
     )
 
     realized_forecast_pnl_df = backtest.extend_results_with_realized_pnl(

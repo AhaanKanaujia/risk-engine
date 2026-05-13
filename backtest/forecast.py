@@ -20,6 +20,7 @@ def compute_portfolio_var_es_forecast(
     lambda_val: float,
     num_simulations: int | None = None,
     historical_method: str = "n-day",
+    manual_return_moments: dict[str, dict[str, float]] | None = None,
 ) -> tuple[float, float]:
     """
     Compute a VaR and ES forecast for the portfolio on a given date using the specified risk method.
@@ -37,6 +38,8 @@ def compute_portfolio_var_es_forecast(
         num_simulations: The number of Monte Carlo simulations to run when method is "monte_carlo".
         historical_method: The historical VaR methodology to use when method is "historical".
             Must be one of "n-day" or "1-day-scaled".
+        manual_return_moments: Optional dictionary of user-specified return means
+            and variances for each stock ticker.
 
     Returns:
         The VaR and ES forecast for the given date and method.
@@ -64,6 +67,7 @@ def compute_portfolio_var_es_forecast(
             alpha,
             lambda_val,
             num_simulations,
+            manual_return_moments=manual_return_moments,
         )
     elif method == "parametric":
         var, es = parametric.compute_portfolio_parametric_var_es(
@@ -73,6 +77,7 @@ def compute_portfolio_var_es_forecast(
             up_to_days,
             alpha,
             lambda_val,
+            manual_return_moments=manual_return_moments,
         )
     else:
         raise ValueError("Invalid method. Please use 'historical', 'monte_carlo', or 'parametric'.")
@@ -88,6 +93,7 @@ def compute_portfolio_var_es_forecast_over_range(
     alpha: float,
     lambda_val: float,
     num_simulations: int | None = None,
+    manual_return_moments: dict[str, dict[str, float]] | None = None,
 ) -> pd.DataFrame:
     """
     Compute VaR and ES forecasts for the portfolio over a date range using the specified risk method.
@@ -103,6 +109,8 @@ def compute_portfolio_var_es_forecast_over_range(
         alpha: The confidence level for the VaR/ES forecast.
         lambda_val: The decay parameter used in weighted calibration or weighted historical estimation.
         num_simulations: The number of Monte Carlo simulations to run when method is "monte_carlo".
+        manual_return_moments: Optional dictionary of user-specified return means
+            and variances for each stock ticker.
 
     Returns:
         A pandas DataFrame containing one row per forecast date with shared forecast inputs,
@@ -194,6 +202,7 @@ def compute_portfolio_var_es_forecast_over_range(
                 lambda_val=lambda_val,
                 num_simulations=forecast_method["num_simulations"],
                 historical_method=forecast_method["historical_method"] or "n-day",
+                manual_return_moments=manual_return_moments,
             )
 
             forecast_label = forecast_method["method"]

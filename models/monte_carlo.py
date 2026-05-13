@@ -11,7 +11,9 @@ from models import calibration, test
 
 from pricing import black_scholes
 
-def plot_simulated_paths(paths: dict[str, np.ndarray]):
+def plot_simulated_paths(
+    paths: dict[str, np.ndarray],
+):
     """
     Plot the simulated stock price paths for each ticker.
 
@@ -59,7 +61,16 @@ def plot_simulated_paths(paths: dict[str, np.ndarray]):
         plt.tight_layout()
         plt.show()
     
-def simulate_stock_prices(pf: portfolio.Portfolio, date: datetime.date, window_size: int, up_to_days: int, lambda_val: float, num_simulations: int, perform_statistical_test: bool = False) -> dict[str, np.ndarray]:
+def simulate_stock_prices(
+    pf: portfolio.Portfolio,
+    date: datetime.date,
+    window_size: int,
+    up_to_days: int,
+    lambda_val: float,
+    num_simulations: int,
+    manual_return_moments: dict[str, dict[str, float]] | None = None,
+    perform_statistical_test: bool = False,
+) -> dict[str, np.ndarray]:
     """
     Simulate the future stock price paths for stocks in portfolio using geometric brownian motion model.
     Use calibration function to get the drift and volatility parameters for each stock in the portfolio on given date.
@@ -72,6 +83,8 @@ def simulate_stock_prices(pf: portfolio.Portfolio, date: datetime.date, window_s
         up_to_days: The number of future days to simulate stock price paths for.
         lambda_val: The lambda parameter for the calibration function.
         num_simulations: The number of simulated paths to generate for each stock.
+        manual_return_moments: Optional dictionary of user-specified return means
+            and variances for each stock ticker.
         perform_statistical_test: Whether to perform a statistical test on the simulated paths.
 
     Returns:
@@ -79,7 +92,13 @@ def simulate_stock_prices(pf: portfolio.Portfolio, date: datetime.date, window_s
     """
 
     # calibrate the price date to a geometric brownian motion model for each ticker
-    calib_results, corr_results = calibration.calibrate_portfolio_gbm(pf, date, window_size, lambda_val=lambda_val)
+    calib_results, corr_results = calibration.calibrate_portfolio_gbm(
+        pf,
+        date,
+        window_size,
+        lambda_val=lambda_val,
+        manual_return_moments=manual_return_moments,
+    )
     mu = np.asarray(calib_results.set_index("ticker")["drift"].to_numpy())
     sigma = np.asarray(calib_results.set_index("ticker")["volatility"].to_numpy())
     corr_matrix = np.asarray(corr_results.to_numpy())
@@ -135,7 +154,14 @@ def simulate_stock_prices(pf: portfolio.Portfolio, date: datetime.date, window_s
 
     return {ticker: paths[:, :, i] for i, ticker in enumerate(tickers)}
 
-def simulate_option_prices(pf: portfolio.Portfolio, date: datetime.date, stock_price_paths: dict[str, np.ndarray], option_positions: list[position.Position], window_size: int, lambda_val: float) -> dict[str, np.ndarray]:
+def simulate_option_prices(
+    pf: portfolio.Portfolio,
+    date: datetime.date,
+    stock_price_paths: dict[str, np.ndarray],
+    option_positions: list[position.Position],
+    window_size: int,
+    lambda_val: float,
+) -> dict[str, np.ndarray]:
     """
     Simulate the future option price paths for options in portfolio using the simulated stock price paths for the underlying stocks.
     Use Black-Scholes formula to compute option prices from the simulated stock price paths.
@@ -191,7 +217,16 @@ def simulate_option_prices(pf: portfolio.Portfolio, date: datetime.date, stock_p
 
     return option_price_paths
 
-def simulate_portfolio_value(pf: portfolio.Portfolio, date: datetime.date, window_size: int, up_to_days: int, lambda_val: float, num_simulations: int, perform_statistical_test: bool = False) -> np.ndarray:
+def simulate_portfolio_value(
+    pf: portfolio.Portfolio,
+    date: datetime.date,
+    window_size: int,
+    up_to_days: int,
+    lambda_val: float,
+    num_simulations: int,
+    manual_return_moments: dict[str, dict[str, float]] | None = None,
+    perform_statistical_test: bool = False,
+) -> np.ndarray:
     """
     Simulate the future portfolio value paths using the simulated stock price paths for the stocks in the portfolio.
 
@@ -202,13 +237,24 @@ def simulate_portfolio_value(pf: portfolio.Portfolio, date: datetime.date, windo
         up_to_days: The number of future days to simulate portfolio value paths for.
         lambda_val: The lambda parameter for the calibration function.
         num_simulations: The number of simulated paths to generate for each stock.
+        manual_return_moments: Optional dictionary of user-specified return means
+            and variances for each stock ticker.
         perform_statistical_test: Whether to perform a statistical test on the simulated paths.
     Returns:
         A numpy array of shape (num_simulations, up_to_days) containing the simulated portfolio value paths.
     """
 
     # get stock positions pnl
-    stock_price_paths = simulate_stock_prices(pf, date, window_size, up_to_days, lambda_val=lambda_val, num_simulations=num_simulations, perform_statistical_test=perform_statistical_test)
+    stock_price_paths = simulate_stock_prices(
+        pf,
+        date,
+        window_size,
+        up_to_days,
+        lambda_val=lambda_val,
+        num_simulations=num_simulations,
+        manual_return_moments=manual_return_moments,
+        perform_statistical_test=perform_statistical_test,
+    )
 
     # get stock positions in the portfolio
     stock_positions = pf.get_portfolio_stock_positions_on_date(date)

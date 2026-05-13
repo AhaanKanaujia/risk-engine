@@ -10,7 +10,10 @@ from models import calibration
 from pricing import black_scholes
 from risk import utils
 
-def get_option_position_deltas(option_positions: list[position.Position], date: datetime.date) -> dict[str, float]:
+def get_option_position_deltas(
+    option_positions: list[position.Position],
+    date: datetime.date,
+) -> dict[str, float]:
     """
     Compute the delta of each option position in the portfolio on the given date using the Black-Scholes model.
 
@@ -45,7 +48,10 @@ def get_option_position_deltas(option_positions: list[position.Position], date: 
     
     return option_deltas
 
-def get_option_position_gammas(option_positions: list[position.Position], date: datetime.date) -> dict[str, float]:
+def get_option_position_gammas(
+    option_positions: list[position.Position],
+    date: datetime.date,
+) -> dict[str, float]:
     """
     Compute the gamma of each option position in the portfolio on the given date using the Black-Scholes model.
 
@@ -79,7 +85,14 @@ def get_option_position_gammas(option_positions: list[position.Position], date: 
     
     return option_gammas
 
-def compute_portfolio_value_distribution(pf: portfolio.Portfolio, date: datetime.date, window_size: int, up_to_days: int, lambda_val: float) -> tuple[float, float, float]:
+def compute_portfolio_value_distribution(
+    pf: portfolio.Portfolio,
+    date: datetime.date,
+    window_size: int,
+    up_to_days: int,
+    lambda_val: float,
+    manual_return_moments: dict[str, dict[str, float]] | None = None,
+) -> tuple[float, float, float]:
     """
     Compute the distribution of portfolio values for the portfolio on the given date using the last window_size days of historical price data.
     Computes price changes for each stock and entire portfolio over up_to_days days.
@@ -90,13 +103,21 @@ def compute_portfolio_value_distribution(pf: portfolio.Portfolio, date: datetime
         window_size: The number of days of historical price data to use for computing the value distribution.
         up_to_days: The number of days in the future to compute the value distribution for.
         lambda_val: The lambda parameter for the calibration function.
+        manual_return_moments: Optional dictionary of user-specified return means
+            and variances for each stock ticker.
 
     Returns:
         A tuple containing the mean and standard deviation of the portfolio value distribution and the current portfolio value on the given date.
     """
 
     # calibrate the price date to a geometric brownian motion model for each ticker
-    calib_results, corr_results = calibration.calibrate_portfolio_gbm(pf, date, window_size, lambda_val=lambda_val)
+    calib_results, corr_results = calibration.calibrate_portfolio_gbm(
+        pf,
+        date,
+        window_size,
+        lambda_val=lambda_val,
+        manual_return_moments=manual_return_moments,
+    )
     mu = np.asarray(calib_results.set_index("ticker")["drift"].to_numpy())
     sigma = np.asarray(calib_results.set_index("ticker")["volatility"].to_numpy())
     corr_matrix = np.asarray(corr_results.to_numpy())
@@ -152,7 +173,15 @@ def compute_portfolio_value_distribution(pf: portfolio.Portfolio, date: datetime
     
     return portfolio_mean, portfolio_sigma
 
-def compute_portfolio_parametric_var_es(pf: portfolio.Portfolio, date: datetime.date, window_size: int, up_to_days: int, alpha: float, lambda_val: float) -> tuple[np.float, np.float]:
+def compute_portfolio_parametric_var_es(
+    pf: portfolio.Portfolio,
+    date: datetime.date,
+    window_size: int,
+    up_to_days: int,
+    alpha: float,
+    lambda_val: float,
+    manual_return_moments: dict[str, dict[str, float]] | None = None,
+) -> tuple[np.float, np.float]:
     """
     Compute the parametric VaR and ES of portfolio on the given date using the last window_size days of historical price data to compute the mean and volatility of the portfolio value distribution.
     VaR is the maximum loss that the portfolio could have experienced with a confidence level of alpha over the next up_to_days days.
@@ -165,12 +194,21 @@ def compute_portfolio_parametric_var_es(pf: portfolio.Portfolio, date: datetime.
         up_to_days: The number of days in the future to compute the parametric VaR for.
         lambda_val: The lambda parameter for the calibration function.
         alpha: The confidence level for the parametric VaR calculation (e.g. 0.95 for 95% confidence level).
+        manual_return_moments: Optional dictionary of user-specified return means
+            and variances for each stock ticker.
     
     Returns:
         The parametric VaR of the portfolio on the given date.
     """
 
-    portfolio_mu, portfolio_sigma = compute_portfolio_value_distribution(pf, date, window_size, up_to_days, lambda_val)
+    portfolio_mu, portfolio_sigma = compute_portfolio_value_distribution(
+        pf,
+        date,
+        window_size,
+        up_to_days,
+        lambda_val,
+        manual_return_moments=manual_return_moments,
+    )
 
     z = norm.ppf(1 - alpha)
     var = -(portfolio_mu + z * portfolio_sigma)
